@@ -11,7 +11,7 @@ import { DatabaseModule } from '../database/database.module'
     DatabaseModule,
     JwtModule.registerAsync({
       useFactory: () => ({
-        secret: process.env.JWT_SECRET ?? 'dev-secret-change-me',
+        secret: process.env.JWT_SECRET || 'dev-secret-change-me',
         signOptions: { expiresIn: '15m' },
       }),
     }),
