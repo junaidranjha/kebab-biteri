@@ -1,55 +1,73 @@
 import 'reflect-metadata'
 import { NestFactory } from '@nestjs/core'
-import { ExpressAdapter } from '@nestjs/platform-express'
+import type { NestExpressApplication } from '@nestjs/platform-express'
 import { ValidationPipe } from '@nestjs/common'
-import helmet from 'helmet'
-import cors from 'cors'
-import express, { Express } from 'express'
 import type { IncomingMessage, ServerResponse } from 'http'
 import { AppModule } from '../src/app.module'
 
-let cachedApp: Express | null = null
-let bootstrapPromise: Promise<Express> | null = null
+let cachedHandler: any = null
+let bootstrapPromise: Promise<any> | null = null
 
-async function bootstrap(): Promise<Express> {
-  if (cachedApp) return cachedApp
+async function bootstrap() {
+  if (cachedHandler) return cachedHandler
   if (bootstrapPromise) return bootstrapPromise
 
   bootstrapPromise = (async () => {
-    const expressApp = express()
-
-    // CORS FIRST so preflight OPTIONS is answered before anything else touches it
-    expressApp.use(
-      cors({
-        origin: true,
-        credentials: true,
-        methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-        allowedHeaders: ['Content-Type', 'Authorization'],
-      }),
-    )
-    expressApp.options('*', cors())
-
-    const nestApp = await NestFactory.create(AppModule, new ExpressAdapter(expressApp), {
+    const app = await NestFactory.create<NestExpressApplication>(AppModule, {
       logger: ['error', 'warn', 'log'],
     })
 
-    nestApp.useGlobalPipes(
+    app.enableCors({
+      origin: true,
+      credentials: true,
+      methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+      allowedHeaders: ['Content-Type', 'Authorization'],
+    })
+
+    app.useGlobalPipes(
       new ValidationPipe({ whitelist: true, transform: true, forbidNonWhitelisted: true }),
     )
-    // helmet with crossOriginResourcePolicy disabled — otherwise it blocks cross-origin XHR
-    nestApp.use(helmet({ crossOriginResourcePolicy: false }))
 
-    await nestApp.init()
-    cachedApp = expressApp
-    return expressApp
+    await app.init()
+    cachedHandler = app.getHttpAdapter().getInstance()
+    return cachedHandler
   })()
 
   return bootstrapPromise
 }
 
+function setCorsHeaders(req: IncomingMessage, res: ServerResponse) {
+  const origin = (req.headers.origin as string) || '*'
+  res.setHeader('Access-Control-Allow-Origin', origin)
+  res.setHeader('Access-Control-Allow-Credentials', 'true')
+  res.setHeader('Access-Control-Allow-Methods', 'GET,POST,PUT,PATCH,DELETE,OPTIONS')
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization')
+}
+
 export default async function handler(req: IncomingMessage, res: ServerResponse) {
-  const app = await bootstrap()
-  return app(req as any, res as any)
+  if (req.method === 'OPTIONS') {
+    setCorsHeaders(req, res)
+    res.statusCode = 204
+    res.end()
+    return
+  }
+
+  try {
+    const app = await bootstrap()
+    return app(req, res)
+  } catch (err: any) {
+    setCorsHeaders(req, res)
+    res.statusCode = 500
+    res.setHeader('Content-Type', 'application/json')
+    console.error('BOOTSTRAP_ERROR', err?.stack || err)
+    res.end(
+      JSON.stringify({
+        error: 'BOOTSTRAP_ERROR',
+        message: err?.message || String(err),
+        stack: err?.stack || null,
+      }),
+    )
+  }
 }
 
 export const config = {
