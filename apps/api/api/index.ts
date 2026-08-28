@@ -33,7 +33,6 @@ async function bootstrap(): Promise<Express> {
       logger: ['error', 'warn', 'log'],
     })
 
-    nestApp.setGlobalPrefix('api')
     nestApp.useGlobalPipes(
       new ValidationPipe({ whitelist: true, transform: true, forbidNonWhitelisted: true }),
     )

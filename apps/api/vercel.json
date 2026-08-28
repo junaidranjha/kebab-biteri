@@ -3,8 +3,7 @@
   "buildCommand": "echo skip",
   "framework": null,
   "rewrites": [
-    { "source": "/api/(.*)", "destination": "/api" },
-    { "source": "/api", "destination": "/api" }
+    { "source": "/(.*)", "destination": "/api" }
   ],
   "functions": {
     "api/index.ts": {
