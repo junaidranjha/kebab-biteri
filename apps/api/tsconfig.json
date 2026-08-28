@@ -2,7 +2,7 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "outDir": "./dist",
-    "rootDir": "./src",
+    "rootDir": ".",
     "module": "CommonJS",
     "moduleResolution": "node",
     "emitDecoratorMetadata": true,
@@ -16,5 +16,5 @@
       "@kebab-biteri/types": ["../../packages/types/src"]
     }
   },
-  "include": ["src", "../../packages/types/src"]
+  "include": ["src", "api", "../../packages/types/src"]
 }
