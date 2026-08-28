@@ -3,11 +3,11 @@
   "buildCommand": "echo skip",
   "framework": null,
   "rewrites": [
+    { "source": "/health", "destination": "/api/health" },
     { "source": "/(.*)", "destination": "/api" }
   ],
   "functions": {
-    "api/index.ts": {
-      "maxDuration": 30
-    }
+    "api/index.ts": { "maxDuration": 30 },
+    "api/health.ts": { "maxDuration": 10 }
   }
 }
