@@ -35,7 +35,7 @@ function getSocketForRole(type: 'user' | 'admin'): Socket | null {
     }
   } catch {}
 
-  const wsUrl = process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') ?? 'http://localhost:3001'
+  const wsUrl = process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') ?? 'https://kebab-biteri-api.vercel.app'
 
   const auth = type === 'admin'
     ? { userId, role, isAdmin: true }
