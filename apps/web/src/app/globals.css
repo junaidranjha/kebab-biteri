@@ -1,0 +1,103 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    --font-display: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+  }
+
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  html {
+    text-size-adjust: 100%;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-[#FFFDF2] text-zinc-950 antialiased;
+    font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+    overscroll-behavior-y: none;
+  }
+
+  html, body {
+    overscroll-behavior: none;
+  }
+}
+
+@layer components {
+  .app-shell {
+    @apply mx-auto min-h-dvh w-full max-w-none md:max-w-6xl xl:max-w-7xl bg-[#FFFDF2] shadow-2xl relative border-x border-amber-100/50;
+  }
+
+  .app-container {
+    @apply mx-auto w-full max-w-none md:max-w-6xl xl:max-w-7xl;
+  }
+
+  .safe-top {
+    padding-top: env(safe-area-inset-top);
+  }
+  .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .skeleton {
+    @apply bg-amber-50/80 rounded-xl;
+    background-image: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(244, 190, 44, 0.15) 50%,
+      transparent 100%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+  }
+
+  .card-app {
+    @apply rounded-2xl bg-white border border-amber-200/60 shadow-sm hover:shadow-md transition-all overflow-hidden;
+  }
+
+  .yellow-gradient {
+    background: linear-gradient(135deg, #F5C33B 0%, #EEB120 100%);
+  }
+
+  .yellow-glow {
+    box-shadow: 0 8px 24px -4px rgba(244, 190, 44, 0.4);
+  }
+
+  .touch-target {
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@layer utilities {
+  .h-dvh {
+    height: 100vh;
+  }
+  @supports (height: 100dvh) {
+    .h-dvh {
+      height: 100dvh;
+    }
+  }
+
+  .min-h-dvh {
+    min-height: 100vh;
+  }
+  @supports (min-height: 100dvh) {
+    .min-h-dvh {
+      min-height: 100dvh;
+    }
+  }
+}

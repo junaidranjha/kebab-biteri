@@ -1,0 +1,27 @@
+{
+  "name": "kebab-biteri",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Kebab Biteri — Production Restaurant PWA (Next.js + NestJS + MongoDB)",
+  "scripts": {
+    "dev:web": "npm --workspace apps/web run dev",
+    "dev:api": "npm --workspace apps/api run dev",
+    "dev": "npx concurrently \"npm run dev:api\" \"npm run dev:web\"",
+    "build": "npm --workspace apps/web run build",
+    "build:api": "npm --workspace apps/api run build",
+    "lint": "npm --workspace apps/web run lint",
+    "seed": "npm --workspace apps/api run seed",
+    "typecheck": "npm --workspace apps/web run typecheck"
+  },
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "devDependencies": {
+    "typescript": "^5.6.3",
+    "prettier": "^3.3.3"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}

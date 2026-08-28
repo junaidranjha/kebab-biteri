@@ -1,0 +1,11 @@
+{
+  "name": "@kebab-biteri/types",
+  "version": "0.1.0",
+  "private": true,
+  "main": "./dist/index.js",
+  "types": "./src/index.ts",
+  "scripts": {
+    "build": "tsc --outDir dist --module commonjs --moduleResolution node --target ES2022 --skipLibCheck src/index.ts",
+    "typecheck": "tsc --noEmit"
+  }
+}
