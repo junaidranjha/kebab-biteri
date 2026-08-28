@@ -1,5 +1,5 @@
 {
-  "installCommand": "cd ../.. && node -e \"const fs=require('fs');const p=JSON.parse(fs.readFileSync('package.json','utf8'));p.workspaces=['apps/api','packages/*'];fs.writeFileSync('package.json',JSON.stringify(p,null,2));\" && npm install && npm run build --workspace=@kebab-biteri/types",
+  "installCommand": "cd ../.. && node scripts/vercel-install.js apps/api && npm install && npm run build --workspace=@kebab-biteri/types",
   "buildCommand": "echo skip",
   "framework": null,
   "rewrites": [
