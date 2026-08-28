@@ -12,11 +12,19 @@ import {
   Notification, NotificationSchema,
 } from '../schemas'
 
-const DB_URL = process.env.DATABASE_URL || 'mongodb://localhost:27017/kebab-biteri'
+const DB_URL =
+  process.env.MONGODB_URI ||
+  process.env.DATABASE_URL ||
+  'mongodb://localhost:27017/kebab-biteri'
 
 @Module({
   imports: [
-    MongooseModule.forRoot(DB_URL),
+    MongooseModule.forRoot(DB_URL, {
+      dbName: 'kebab-biteri',
+      serverSelectionTimeoutMS: 5000,
+      connectTimeoutMS: 5000,
+      bufferCommands: false,
+    }),
     MongooseModule.forFeature([
       { name: User.name, schema: UserSchema },
       { name: Category.name, schema: CategorySchema },
