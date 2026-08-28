@@ -1,29 +1,34 @@
 import 'reflect-metadata'
-import { NestFactory } from '@nestjs/core'
-import type { NestExpressApplication } from '@nestjs/platform-express'
-import { ValidationPipe } from '@nestjs/common'
 import type { IncomingMessage, ServerResponse } from 'http'
-import { AppModule } from '../src/app.module'
 
 let cachedHandler: any = null
 let bootstrapPromise: Promise<any> | null = null
+
+function setCorsHeaders(req: IncomingMessage, res: ServerResponse) {
+  const origin = (req.headers.origin as string) || '*'
+  res.setHeader('Access-Control-Allow-Origin', origin)
+  res.setHeader('Access-Control-Allow-Credentials', 'true')
+  res.setHeader('Access-Control-Allow-Methods', 'GET,POST,PUT,PATCH,DELETE,OPTIONS')
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization')
+}
 
 async function bootstrap() {
   if (cachedHandler) return cachedHandler
   if (bootstrapPromise) return bootstrapPromise
 
   bootstrapPromise = (async () => {
-    const app = await NestFactory.create<NestExpressApplication>(AppModule, {
-      logger: ['error', 'warn', 'log'],
-    })
+    // Defer imports so any load error is catchable
+    const { NestFactory } = require('@nestjs/core')
+    const { ValidationPipe } = require('@nestjs/common')
+    const { AppModule } = require('../src/app.module')
 
+    const app = await NestFactory.create(AppModule, { logger: ['error', 'warn', 'log'] })
     app.enableCors({
       origin: true,
       credentials: true,
       methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
       allowedHeaders: ['Content-Type', 'Authorization'],
     })
-
     app.useGlobalPipes(
       new ValidationPipe({ whitelist: true, transform: true, forbidNonWhitelisted: true }),
     )
@@ -34,14 +39,6 @@ async function bootstrap() {
   })()
 
   return bootstrapPromise
-}
-
-function setCorsHeaders(req: IncomingMessage, res: ServerResponse) {
-  const origin = (req.headers.origin as string) || '*'
-  res.setHeader('Access-Control-Allow-Origin', origin)
-  res.setHeader('Access-Control-Allow-Credentials', 'true')
-  res.setHeader('Access-Control-Allow-Methods', 'GET,POST,PUT,PATCH,DELETE,OPTIONS')
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization')
 }
 
 export default async function handler(req: IncomingMessage, res: ServerResponse) {
@@ -65,6 +62,8 @@ export default async function handler(req: IncomingMessage, res: ServerResponse)
         error: 'BOOTSTRAP_ERROR',
         message: err?.message || String(err),
         stack: err?.stack || null,
+        code: err?.code || null,
+        node: process.version,
       }),
     )
   }
