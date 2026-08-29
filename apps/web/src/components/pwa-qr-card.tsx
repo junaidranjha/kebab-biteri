@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import Image from 'next/image'
+import { QRCodeSVG } from 'qrcode.react'
 import { QrCode, Smartphone, Download, Check, Sparkles, Share2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
@@ -76,10 +76,6 @@ export function PwaQrCard() {
     }
   }
 
-  const qrImageUrl = appUrl
-    ? `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(appUrl)}&color=d92b2b&bgcolor=ffffff&margin=1`
-    : ''
-
   return (
     <div className="relative overflow-hidden rounded-3xl border border-primary/20 bg-gradient-to-br from-charcoal-900 via-charcoal-800 to-charcoal-900 p-5 shadow-xl text-white">
       {/* Background glowing ambient light */}
@@ -107,14 +103,21 @@ export function PwaQrCard() {
         {/* QR Code Container */}
         <div className="mt-4 flex flex-col sm:flex-row items-center gap-5 rounded-2xl bg-white/5 p-4 backdrop-blur-md border border-white/10">
           <div className="relative flex h-40 w-40 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-white p-2 shadow-lg">
-            {qrImageUrl ? (
-              <Image
-                src={qrImageUrl}
-                alt="QR Code para instalar Kebab Biteri PWA"
-                width={150}
-                height={150}
-                className="h-full w-full object-contain"
-                unoptimized
+            {appUrl ? (
+              <QRCodeSVG
+                value={appUrl}
+                size={144}
+                level="M"
+                fgColor="#d92b2b"
+                bgColor="#ffffff"
+                includeMargin={false}
+                imageSettings={{
+                  src: '/icons/icon-192.png',
+                  height: 32,
+                  width: 32,
+                  excavate: true,
+                }}
+                aria-label="QR Code para instalar Kebab Biteri PWA"
               />
             ) : (
               <div className="flex h-full w-full items-center justify-center text-charcoal">
